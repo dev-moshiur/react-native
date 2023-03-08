@@ -2,70 +2,51 @@ import { Alert, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import Header from "../components/Home/Header";
 import Homebody from "../components/Home/Homebody";
-import { useState } from "react";
+
 import axios from "axios";
-import { useEffect } from "react";
-import { useIsFocused } from "@react-navigation/native";
+
+import { useQuery } from "react-query";
+
 
 const HomeScreen = () => {
-  const [Allpendingbalance, setAllpendingbalance] = useState([]);
-  const [Allpendingorder, setAllpendingorder] = useState([]);
-  const [Allpendingrefund, setAllpendingrefund] = useState([]);
-  const isFocused = useIsFocused();
-
-  const getpendingaddbalance = () => {
-    axios({
+  const {data:balanceData = 0} = useQuery(['balance'],()=>getBalanceNumber(),{refetchInterval:1500});
+  const {data:Allpendingorder = 0} = useQuery(['pendingorder'],()=>getpendingorder(),{refetchInterval:1500});
+  const {data:Allpendingrefund = 0} = useQuery(['pendingrefund'],()=>getpendingrefund(),{refetchInterval:1500});
+ 
+  
+  const getBalanceNumber = async ()=>{
+    let response = await axios({
       method: "get",
       url: "https://offerapp.onrender.com/getpendingaddbalance",
     })
-      .then((response) => {
-        setAllpendingbalance(response.data.length);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-  const getpendingorder = () => {
-    axios({
+    return response.data
+  }
+
+  
+  const getpendingorder = async() => {
+   const response = await axios({
       method: "get",
       url: "https://offerapp.onrender.com/getpendingorder",
     })
-      .then((response) => {
-        setAllpendingorder(response.data.length);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    return response.data
+      
   };
-  const getpendingrefund = () => {
-    axios({
+  const getpendingrefund = async() => {
+   const response = await axios({
       method: "get",
       url: "https://offerapp.onrender.com/getpendingrefund",
     })
-      .then((response) => {
-        setAllpendingrefund(response.data.length);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      return response.data
   };
 
-  useEffect(() => {
-    // Eitake Real Time Fetch korte hobe//////////////////////////////////////////////////
 
-    if (isFocused) {
-      getpendingaddbalance();
-      getpendingorder();
-      getpendingrefund();
-    }
-  }, [isFocused]);
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       <Header />
       <Homebody
-        allpendingbalance={Allpendingbalance}
-        Allpendingorder={Allpendingorder}
-        Allpendingrefund={Allpendingrefund}
+        allpendingbalance={balanceData.length}
+        Allpendingorder={Allpendingorder.length}
+        Allpendingrefund={Allpendingrefund.length}
       />
     </View>
   );

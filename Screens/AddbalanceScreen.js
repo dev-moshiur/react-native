@@ -279,7 +279,7 @@ const Addbalancehistory = ({ route, navigation }) => {
             <TextInput
               placeholderTextColor="black"
               placeholder="Enter Ammount"
-              style={styles.input}
+              // style={styles.input}
               defaultValue={addbalanceDetails?.ammount}
             />
             <View
